@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
 import { Zap, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useRealtimePrices } from "@/hooks/useRealtimePrices";
+import LiveProgressBar from "./LiveProgressBar";
+import ConnectionStatus from "./ConnectionStatus";
 
 interface Market {
   id: number;
@@ -82,21 +85,36 @@ const cardVariants = {
 };
 
 const TrendingMarkets = () => {
+  // Set up real-time price updates for trending markets
+  const initialPrices = markets.reduce((acc, m) => {
+    acc[m.id] = { yesPercent: m.yesPercent, noPercent: m.noPercent };
+    return acc;
+  }, {} as Record<number, { yesPercent: number; noPercent: number }>);
+
+  const { prices, isConnected } = useRealtimePrices({
+    marketIds: markets.map((m) => m.id),
+    initialPrices,
+    updateInterval: 3000,
+  });
+
   return (
     <section id="markets" className="py-16 lg:py-24 px-4">
       <div className="container mx-auto">
         {/* Section Header */}
         <motion.div 
-          className="mb-10 lg:mb-12"
+          className="mb-10 lg:mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-2xl lg:text-3xl font-bold text-neon-green neon-text mb-2">
-            &gt; TRENDING_MARKETS
-          </h2>
-          <p className="text-neon-green/60 text-sm">// most active predictions</p>
+          <div>
+            <h2 className="text-2xl lg:text-3xl font-bold text-neon-green neon-text mb-2">
+              &gt; TRENDING_MARKETS
+            </h2>
+            <p className="text-neon-green/60 text-sm">// most active predictions</p>
+          </div>
+          <ConnectionStatus isConnected={isConnected} />
         </motion.div>
 
         {/* Markets Grid */}
@@ -107,74 +125,83 @@ const TrendingMarkets = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {markets.map((market) => (
-            <motion.div
-              key={market.id}
-              variants={cardVariants}
-              whileHover={{ 
-                scale: 1.03, 
-                boxShadow: "0 0 30px hsl(147 100% 50% / 0.3)",
-                borderColor: "hsl(147 100% 50% / 0.8)"
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <Link 
-                to={`/market/${market.id}`} 
-                className="market-card cursor-pointer block h-full"
+          {markets.map((market) => {
+            const livePrice = prices[market.id];
+            const yesPercent = livePrice?.yesPercent ?? market.yesPercent;
+            const noPercent = livePrice?.noPercent ?? market.noPercent;
+            const change = livePrice?.change ?? 0;
+
+            return (
+              <motion.div
+                key={market.id}
+                variants={cardVariants}
+                whileHover={{ 
+                  scale: 1.03, 
+                  boxShadow: "0 0 30px hsl(147 100% 50% / 0.3)",
+                  borderColor: "hsl(147 100% 50% / 0.8)"
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
-                {/* Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`text-xs font-bold px-2 py-1 rounded ${market.source === "POLY" ? "bg-neon-green/20 text-neon-green" : "bg-purple-500/20 text-purple-400"}`}>
-                    [{market.source}]
-                  </span>
-                  {market.isHot && (
-                    <motion.span 
-                      className="flex items-center gap-1 text-yellow-500 text-xs"
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ repeat: Infinity, duration: 2 }}
-                    >
-                      <Zap className="w-3 h-3" />
-                      HOT
-                    </motion.span>
-                  )}
-                </div>
-
-                {/* Question */}
-                <h3 className="text-neon-green font-semibold text-sm lg:text-base mb-3 line-clamp-2 min-h-[2.5rem] lg:min-h-[3rem]">
-                  {market.question}
-                </h3>
-
-                {/* Category */}
-                <span className="text-neon-green/60 text-xs mb-4 block">{market.category}</span>
-
-                {/* Progress Bar */}
-                <div className="mb-4">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-neon-green">YES {market.yesPercent}%</span>
-                    <span className="text-red-400">NO {market.noPercent}%</span>
+                <Link 
+                  to={`/market/${market.id}`} 
+                  className="market-card cursor-pointer block h-full"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`text-xs font-bold px-2 py-1 rounded ${market.source === "POLY" ? "bg-neon-green/20 text-neon-green" : "bg-purple-500/20 text-purple-400"}`}>
+                      [{market.source}]
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {change !== 0 && (
+                        <motion.span
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className={`text-xs font-bold ${change > 0 ? "text-green-400" : "text-red-400"}`}
+                        >
+                          {change > 0 ? "▲" : "▼"}
+                        </motion.span>
+                      )}
+                      {market.isHot && (
+                        <motion.span 
+                          className="flex items-center gap-1 text-yellow-500 text-xs"
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ repeat: Infinity, duration: 2 }}
+                        >
+                          <Zap className="w-3 h-3" />
+                          HOT
+                        </motion.span>
+                      )}
+                    </div>
                   </div>
-                  <div className="h-2 bg-black/50 rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-gradient-to-r from-neon-green to-neon-green/70 rounded-full"
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${market.yesPercent}%` }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8, delay: 0.3 }}
+
+                  {/* Question */}
+                  <h3 className="text-neon-green font-semibold text-sm lg:text-base mb-3 line-clamp-2 min-h-[2.5rem] lg:min-h-[3rem]">
+                    {market.question}
+                  </h3>
+
+                  {/* Category */}
+                  <span className="text-neon-green/60 text-xs mb-4 block">{market.category}</span>
+
+                  {/* Live Progress Bar */}
+                  <div className="mb-4">
+                    <LiveProgressBar
+                      yesPercent={yesPercent}
+                      noPercent={noPercent}
                     />
                   </div>
-                </div>
 
-                {/* Footer */}
-                <div className="flex justify-between items-center text-xs text-neon-green/60">
-                  <span>💰 {market.liquidity}</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {market.timeRemaining}
-                  </span>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                  {/* Footer */}
+                  <div className="flex justify-between items-center text-xs text-neon-green/60">
+                    <span>💰 {market.liquidity}</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {market.timeRemaining}
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         {/* AI Analysis Badge */}
