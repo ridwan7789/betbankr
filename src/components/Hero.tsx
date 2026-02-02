@@ -1,15 +1,44 @@
+import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   // Mock data for the chart
   const chartData = [30, 35, 32, 45, 42, 48, 44, 52, 48, 55, 50, 58, 52, 48];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as const },
+    },
+  };
+
   return (
     <section className="pt-24 lg:pt-32 pb-16 lg:pb-24 px-4">
       <div className="container mx-auto">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <motion.div 
+          className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Left Panel - Terminal */}
-          <div className="terminal-window">
+          <motion.div 
+            className="terminal-window"
+            variants={itemVariants}
+          >
             <div className="terminal-header">
               <div className="terminal-dot bg-red-500"></div>
               <div className="terminal-dot bg-yellow-500"></div>
@@ -17,35 +46,58 @@ const Hero = () => {
               <span className="ml-3 text-neon-green/60 text-sm">betverse@terminal:~$</span>
             </div>
             <div className="p-6 lg:p-8">
-              <div className="mb-6">
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
                 <p className="text-neon-green/60 text-sm mb-1">system.status: <span className="text-neon-green">ONLINE</span></p>
                 <p className="text-neon-green/60 text-sm">live_predictions: <span className="text-neon-green">ACTIVE</span></p>
-              </div>
+              </motion.div>
               
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold mb-6">
+              <motion.h1 
+                className="text-4xl lg:text-5xl xl:text-6xl font-bold mb-6"
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+              >
                 <span className="text-neon-green neon-text">&gt; PREDICT</span>
                 <br />
                 <span className="text-neon-green neon-text">THE_FUTURE</span>
-              </h1>
+              </motion.h1>
               
-              <div className="mb-8 text-neon-green/60 text-sm lg:text-base">
+              <motion.div 
+                className="mb-8 text-neon-green/60 text-sm lg:text-base"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
                 <p>// Place predictions on real-world events</p>
                 <p>// Data: Polymarket + Kalshi</p>
-              </div>
+              </motion.div>
               
-              <div className="flex flex-wrap gap-4">
-                <button className="btn-primary">
+              <motion.div 
+                className="flex flex-wrap gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                <Link to="/markets" className="btn-primary hover:scale-105 transition-transform">
                   ./explore_markets
-                </button>
-                <button className="btn-outline">
+                </Link>
+                <Link to="/how-it-works" className="btn-outline hover:scale-105 transition-transform">
                   cat README.md
-                </button>
-              </div>
+                </Link>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Panel - Market Analysis */}
-          <div className="terminal-window">
+          <motion.div 
+            className="terminal-window"
+            variants={itemVariants}
+          >
             <div className="terminal-header">
               <div className="terminal-dot bg-red-500"></div>
               <div className="terminal-dot bg-yellow-500"></div>
@@ -53,16 +105,26 @@ const Hero = () => {
               <span className="ml-3 text-neon-green/60 text-sm">market_analysis.sh</span>
             </div>
             <div className="p-6 lg:p-8">
-              <div className="flex justify-between items-start mb-6">
+              <motion.div 
+                className="flex justify-between items-start mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
                 <div>
                   <h3 className="text-neon-green font-bold text-lg lg:text-xl mb-1">BTC_150K_PREDICTION</h3>
                   <p className="text-neon-green/60 text-sm">// 30-day probability trend</p>
                 </div>
-                <div className="text-right">
+                <motion.div 
+                  className="text-right"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.7, type: "spring" }}
+                >
                   <p className="text-neon-green font-bold text-2xl lg:text-3xl neon-text">48.2%</p>
                   <p className="text-neon-green/60 text-xs uppercase">CURRENT_ODDS</p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
               
               {/* Chart */}
               <div className="h-48 lg:h-56 relative">
@@ -95,41 +157,55 @@ const Hero = () => {
                   ))}
                   
                   {/* Area fill */}
-                  <path
+                  <motion.path
                     d={`M 0 ${180 - chartData[0] * 3} ${chartData.map((val, i) => `L ${(i / (chartData.length - 1)) * 400} ${180 - val * 3}`).join(' ')} L 400 180 L 0 180 Z`}
                     fill="url(#chartGradient)"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8, duration: 0.6 }}
                   />
                   
                   {/* Line */}
-                  <path
+                  <motion.path
                     d={`M 0 ${180 - chartData[0] * 3} ${chartData.map((val, i) => `L ${(i / (chartData.length - 1)) * 400} ${180 - val * 3}`).join(' ')}`}
                     fill="none"
                     stroke="hsl(147 100% 50%)"
                     strokeWidth="3"
                     filter="url(#glow)"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ delay: 0.6, duration: 1.5, ease: "easeInOut" }}
                   />
                   
                   {/* Data points */}
                   {chartData.map((val, i) => (
-                    <circle
+                    <motion.circle
                       key={i}
                       cx={(i / (chartData.length - 1)) * 400}
                       cy={180 - val * 3}
                       r="4"
                       fill="hsl(147 100% 50%)"
                       filter="url(#glow)"
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1.2 + i * 0.05, duration: 0.2 }}
                     />
                   ))}
                 </svg>
               </div>
               
-              <div className="flex items-center gap-2 mt-4 text-neon-green/60 text-sm">
+              <motion.div 
+                className="flex items-center gap-2 mt-4 text-neon-green/60 text-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.8 }}
+              >
                 <TrendingUp className="w-4 h-4 text-neon-green" />
                 <span>+5.2% (24h)</span>
-              </div>
+              </motion.div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
