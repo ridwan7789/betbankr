@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { TrendingUp, Briefcase, HelpCircle } from "lucide-react";
 import logo from "@/assets/logo.png";
+import WalletButton from "./WalletButton";
 
 const Header = () => {
   const location = useLocation();
@@ -59,9 +60,7 @@ const Header = () => {
           </nav>
 
           {/* Wallet Button */}
-          <button className="purple-gradient px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg text-white font-semibold text-sm transition-all hover:opacity-90" style={{ boxShadow: '0 0 20px hsl(270 100% 60% / 0.4)' }}>
-            Select Wallet
-          </button>
+          <WalletButton />
         </div>
       </div>
     </header>
