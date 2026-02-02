@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Zap, Clock, Search, TrendingUp } from "lucide-react";
+import { useRealtimePrices } from "@/hooks/useRealtimePrices";
+import LiveProgressBar from "@/components/LiveProgressBar";
+import ConnectionStatus from "@/components/ConnectionStatus";
 
 interface Market {
   id: number;
@@ -214,6 +217,21 @@ const Markets = () => {
   const [selectedSource, setSelectedSource] = useState("All");
   const [hotOnly, setHotOnly] = useState(false);
 
+  // Set up real-time price updates
+  const initialPrices = useMemo(() => {
+    const prices: Record<number, { yesPercent: number; noPercent: number }> = {};
+    allMarkets.forEach((m) => {
+      prices[m.id] = { yesPercent: m.yesPercent, noPercent: m.noPercent };
+    });
+    return prices;
+  }, []);
+
+  const { prices, isConnected } = useRealtimePrices({
+    marketIds: allMarkets.map((m) => m.id),
+    initialPrices,
+    updateInterval: 2500,
+  });
+
   const filteredMarkets = useMemo(() => {
     return allMarkets.filter((market) => {
       // Search filter
@@ -250,17 +268,20 @@ const Markets = () => {
         <div className="container mx-auto px-4">
           {/* Page Header */}
           <motion.div 
-            className="mb-8"
+            className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h1 className="text-2xl lg:text-4xl font-bold text-neon-green neon-text mb-2">
-              &gt; Prediction_Markets
-            </h1>
-            <p className="text-neon-green/60 text-sm lg:text-base">
-              Browse and participate in prediction markets from Polymarket and Kalshi
-            </p>
+            <div>
+              <h1 className="text-2xl lg:text-4xl font-bold text-neon-green neon-text mb-2">
+                &gt; Prediction_Markets
+              </h1>
+              <p className="text-neon-green/60 text-sm lg:text-base">
+                Browse and participate in prediction markets from Polymarket and Kalshi
+              </p>
+            </div>
+            <ConnectionStatus isConnected={isConnected} />
           </motion.div>
 
           {/* Search & Filters */}
@@ -367,86 +388,94 @@ const Markets = () => {
               },
             }}
           >
-            {filteredMarkets.map((market) => (
-              <motion.div
-                key={market.id}
-                variants={cardVariants}
-                whileHover={{ 
-                  scale: 1.03, 
-                  boxShadow: "0 0 30px hsl(147 100% 50% / 0.3)",
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <Link 
-                  to={`/market/${market.id}`}
-                  className="market-card cursor-pointer group block h-full"
+            {filteredMarkets.map((market) => {
+              const livePrice = prices[market.id];
+              const yesPercent = livePrice?.yesPercent ?? market.yesPercent;
+              const noPercent = livePrice?.noPercent ?? market.noPercent;
+              const change = livePrice?.change ?? 0;
+
+              return (
+                <motion.div
+                  key={market.id}
+                  variants={cardVariants}
+                  whileHover={{ 
+                    scale: 1.03, 
+                    boxShadow: "0 0 30px hsl(147 100% 50% / 0.3)",
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`text-xs font-bold px-2 py-1 rounded border ${
-                      market.source === "POLY" 
-                        ? "bg-neon-green/10 text-neon-green border-neon-green/50" 
-                        : "bg-purple-500/10 text-purple-400 border-purple-500/50"
-                    }`}>
-                      [{market.source}]
-                    </span>
-                    {market.isHot && (
-                      <motion.span 
-                        className="flex items-center gap-1 text-yellow-500 text-xs"
-                        animate={{ scale: [1, 1.1, 1] }}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                      >
-                        <Zap className="w-3 h-3" />
-                        HOT
-                      </motion.span>
-                    )}
-                  </div>
-
-                  {/* Question */}
-                  <h3 className="text-neon-green font-semibold text-sm lg:text-base mb-3 line-clamp-2 min-h-[2.5rem] lg:min-h-[3rem]">
-                    &gt; {market.question}
-                  </h3>
-
-                  {/* Category */}
-                  <span className="inline-block text-neon-green/60 text-xs mb-4 px-2 py-0.5 border border-neon-green/30 rounded">
-                    #{market.category}
-                  </span>
-
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-neon-green">YES: {market.yesPercent}%</span>
-                      <span className="text-red-400">NO: {market.noPercent}%</span>
+                  <Link 
+                    to={`/market/${market.id}`}
+                    className="market-card cursor-pointer group block h-full"
+                  >
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`text-xs font-bold px-2 py-1 rounded border ${
+                        market.source === "POLY" 
+                          ? "bg-neon-green/10 text-neon-green border-neon-green/50" 
+                          : "bg-purple-500/10 text-purple-400 border-purple-500/50"
+                      }`}>
+                        [{market.source}]
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {change !== 0 && (
+                          <motion.span
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={`text-xs font-bold ${change > 0 ? "text-green-400" : "text-red-400"}`}
+                          >
+                            {change > 0 ? "▲" : "▼"}
+                          </motion.span>
+                        )}
+                        {market.isHot && (
+                          <motion.span 
+                            className="flex items-center gap-1 text-yellow-500 text-xs"
+                            animate={{ scale: [1, 1.1, 1] }}
+                            transition={{ repeat: Infinity, duration: 2 }}
+                          >
+                            <Zap className="w-3 h-3" />
+                            HOT
+                          </motion.span>
+                        )}
+                      </div>
                     </div>
-                    <div className="h-2 bg-black/50 rounded-full overflow-hidden flex">
-                      <div 
-                        className="h-full bg-neon-green rounded-l-full"
-                        style={{ width: `${market.yesPercent}%` }}
-                      />
-                      <div 
-                        className="h-full bg-red-500/60 rounded-r-full"
-                        style={{ width: `${market.noPercent}%` }}
+
+                    {/* Question */}
+                    <h3 className="text-neon-green font-semibold text-sm lg:text-base mb-3 line-clamp-2 min-h-[2.5rem] lg:min-h-[3rem]">
+                      &gt; {market.question}
+                    </h3>
+
+                    {/* Category */}
+                    <span className="inline-block text-neon-green/60 text-xs mb-4 px-2 py-0.5 border border-neon-green/30 rounded">
+                      #{market.category}
+                    </span>
+
+                    {/* Live Progress Bar */}
+                    <div className="mb-4">
+                      <LiveProgressBar
+                        yesPercent={yesPercent}
+                        noPercent={noPercent}
                       />
                     </div>
-                  </div>
 
-                  {/* Footer */}
-                  <div className="flex justify-between items-center text-xs text-neon-green/60 pb-3 border-b border-neon-green/20">
-                    <span>$ {market.liquidity}</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {market.timeRemaining}
-                    </span>
-                  </div>
+                    {/* Footer */}
+                    <div className="flex justify-between items-center text-xs text-neon-green/60 pb-3 border-b border-neon-green/20">
+                      <span>$ {market.liquidity}</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {market.timeRemaining}
+                      </span>
+                    </div>
 
-                  {/* AI Analysis */}
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-neon-green rounded-full animate-pulse"></span>
-                    <span className="text-neon-green/60 text-xs">AI_ANALYSIS: READY</span>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                    {/* AI Analysis */}
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-neon-green rounded-full animate-pulse"></span>
+                      <span className="text-neon-green/60 text-xs">AI_ANALYSIS: READY</span>
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </motion.div>
 
           {/* No Results */}
