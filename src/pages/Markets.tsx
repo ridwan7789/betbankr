@@ -1,4 +1,6 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Zap, Clock, Search, TrendingUp } from "lucide-react";
@@ -197,6 +199,15 @@ const allMarkets: Market[] = [
 const categories = ["All", "Crypto", "Technology", "Space", "Economics", "Automotive", "Politics"];
 const sources = ["All", "Polymarket", "Kalshi"];
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const },
+  },
+};
+
 const Markets = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -238,17 +249,27 @@ const Markets = () => {
       <main className="pt-20 lg:pt-24 pb-16">
         <div className="container mx-auto px-4">
           {/* Page Header */}
-          <div className="mb-8">
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
             <h1 className="text-2xl lg:text-4xl font-bold text-neon-green neon-text mb-2">
               &gt; Prediction_Markets
             </h1>
             <p className="text-neon-green/60 text-sm lg:text-base">
               Browse and participate in prediction markets from Polymarket and Kalshi
             </p>
-          </div>
+          </motion.div>
 
           {/* Search & Filters */}
-          <div className="terminal-window p-4 lg:p-6 mb-8">
+          <motion.div 
+            className="terminal-window p-4 lg:p-6 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             {/* Search Bar */}
             <div className="relative mb-6">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neon-green/60" />
@@ -319,85 +340,122 @@ const Markets = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Results Count */}
-          <div className="mb-6">
+          <motion.div 
+            className="mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             <span className="text-neon-green text-sm">
               &gt; Found <span className="font-bold">{filteredMarkets.length}</span> markets
             </span>
-          </div>
+          </motion.div>
 
           {/* Markets Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <motion.div 
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.05,
+                },
+              },
+            }}
+          >
             {filteredMarkets.map((market) => (
-              <div key={market.id} className="market-card cursor-pointer group">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`text-xs font-bold px-2 py-1 rounded border ${
-                    market.source === "POLY" 
-                      ? "bg-neon-green/10 text-neon-green border-neon-green/50" 
-                      : "bg-purple-500/10 text-purple-400 border-purple-500/50"
-                  }`}>
-                    [{market.source}]
-                  </span>
-                  {market.isHot && (
-                    <span className="flex items-center gap-1 text-yellow-500 text-xs">
-                      <Zap className="w-3 h-3" />
-                      HOT
+              <motion.div
+                key={market.id}
+                variants={cardVariants}
+                whileHover={{ 
+                  scale: 1.03, 
+                  boxShadow: "0 0 30px hsl(147 100% 50% / 0.3)",
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <Link 
+                  to={`/market/${market.id}`}
+                  className="market-card cursor-pointer group block h-full"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`text-xs font-bold px-2 py-1 rounded border ${
+                      market.source === "POLY" 
+                        ? "bg-neon-green/10 text-neon-green border-neon-green/50" 
+                        : "bg-purple-500/10 text-purple-400 border-purple-500/50"
+                    }`}>
+                      [{market.source}]
                     </span>
-                  )}
-                </div>
-
-                {/* Question */}
-                <h3 className="text-neon-green font-semibold text-sm lg:text-base mb-3 line-clamp-2 min-h-[2.5rem] lg:min-h-[3rem]">
-                  &gt; {market.question}
-                </h3>
-
-                {/* Category */}
-                <span className="inline-block text-neon-green/60 text-xs mb-4 px-2 py-0.5 border border-neon-green/30 rounded">
-                  #{market.category}
-                </span>
-
-                {/* Progress Bar */}
-                <div className="mb-4">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-neon-green">YES: {market.yesPercent}%</span>
-                    <span className="text-red-400">NO: {market.noPercent}%</span>
+                    {market.isHot && (
+                      <motion.span 
+                        className="flex items-center gap-1 text-yellow-500 text-xs"
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                      >
+                        <Zap className="w-3 h-3" />
+                        HOT
+                      </motion.span>
+                    )}
                   </div>
-                  <div className="h-2 bg-black/50 rounded-full overflow-hidden flex">
-                    <div 
-                      className="h-full bg-neon-green rounded-l-full"
-                      style={{ width: `${market.yesPercent}%` }}
-                    />
-                    <div 
-                      className="h-full bg-red-500/60 rounded-r-full"
-                      style={{ width: `${market.noPercent}%` }}
-                    />
-                  </div>
-                </div>
 
-                {/* Footer */}
-                <div className="flex justify-between items-center text-xs text-neon-green/60 pb-3 border-b border-neon-green/20">
-                  <span>$ {market.liquidity}</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {market.timeRemaining}
+                  {/* Question */}
+                  <h3 className="text-neon-green font-semibold text-sm lg:text-base mb-3 line-clamp-2 min-h-[2.5rem] lg:min-h-[3rem]">
+                    &gt; {market.question}
+                  </h3>
+
+                  {/* Category */}
+                  <span className="inline-block text-neon-green/60 text-xs mb-4 px-2 py-0.5 border border-neon-green/30 rounded">
+                    #{market.category}
                   </span>
-                </div>
 
-                {/* AI Analysis */}
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-neon-green rounded-full animate-pulse"></span>
-                  <span className="text-neon-green/60 text-xs">AI_ANALYSIS: READY</span>
-                </div>
-              </div>
+                  {/* Progress Bar */}
+                  <div className="mb-4">
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-neon-green">YES: {market.yesPercent}%</span>
+                      <span className="text-red-400">NO: {market.noPercent}%</span>
+                    </div>
+                    <div className="h-2 bg-black/50 rounded-full overflow-hidden flex">
+                      <div 
+                        className="h-full bg-neon-green rounded-l-full"
+                        style={{ width: `${market.yesPercent}%` }}
+                      />
+                      <div 
+                        className="h-full bg-red-500/60 rounded-r-full"
+                        style={{ width: `${market.noPercent}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex justify-between items-center text-xs text-neon-green/60 pb-3 border-b border-neon-green/20">
+                    <span>$ {market.liquidity}</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {market.timeRemaining}
+                    </span>
+                  </div>
+
+                  {/* AI Analysis */}
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-neon-green rounded-full animate-pulse"></span>
+                    <span className="text-neon-green/60 text-xs">AI_ANALYSIS: READY</span>
+                  </div>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* No Results */}
           {filteredMarkets.length === 0 && (
-            <div className="terminal-window p-8 text-center">
+            <motion.div 
+              className="terminal-window p-8 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
               <p className="text-neon-green/60 text-sm">
                 // No markets found matching your filters
               </p>
@@ -412,7 +470,7 @@ const Markets = () => {
               >
                 ./clear_filters
               </button>
-            </div>
+            </motion.div>
           )}
         </div>
       </main>

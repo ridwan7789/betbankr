@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletContextProvider } from "./contexts/WalletContext";
 import Index from "./pages/Index";
 import Markets from "./pages/Markets";
+import MarketDetail from "./pages/MarketDetail";
 import Portfolio from "./pages/Portfolio";
 import HowItWorks from "./pages/HowItWorks";
 import NotFound from "./pages/NotFound";
@@ -22,6 +23,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/markets" element={<Markets />} />
+            <Route path="/market/:id" element={<MarketDetail />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
