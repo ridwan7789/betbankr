@@ -43,7 +43,7 @@ const Hero = () => {
               <div className="terminal-dot bg-red-500"></div>
               <div className="terminal-dot bg-yellow-500"></div>
               <div className="terminal-dot bg-green-500"></div>
-              <span className="ml-3 text-neon-green/60 text-sm">betverse@terminal:~$</span>
+              <span className="ml-3 text-neon-green/60 text-sm">betbankr@terminal:~$</span>
             </div>
             <div className="p-6 lg:p-8">
               <motion.div 

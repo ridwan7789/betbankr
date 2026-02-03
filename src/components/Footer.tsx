@@ -18,7 +18,7 @@ const Footer = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-neon-green font-bold text-lg">Betverse</span>
+                <span className="text-neon-green font-bold text-lg">BetBankr</span>
                 <span className="text-neon-green/60 text-[10px] uppercase tracking-widest">PREDICTION PROTOCOL</span>
               </div>
             </div>
@@ -76,7 +76,7 @@ const Footer = () => {
         {/* Bottom Copyright */}
         <div className="pt-8 border-t border-neon-green/20">
           <p className="text-neon-green/40 text-sm text-center">
-            /* © 2026 Betverse. All rights reserved. */
+            /* © 2026 BetBankr. All rights reserved. */
           </p>
         </div>
       </div>
