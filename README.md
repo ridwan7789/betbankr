@@ -2,6 +2,8 @@
 
 BetBankr adalah protokol prediksi berbasis blockchain Solana yang memungkinkan pengguna membuat prediksi tentang berbagai kejadian dunia nyata.
 
+GitHub: [https://github.com/betbankr](https://github.com/betbankr)
+
 ## Teknologi yang Digunakan
 
 Proyek ini dibangun dengan:

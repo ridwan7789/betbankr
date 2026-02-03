@@ -10,9 +10,9 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10">
-                <img 
-                  src={logo} 
-                  alt="Betverse Logo" 
+                <img
+                  src={logo}
+                  alt="Betverse Logo"
                   className="w-full h-full object-contain"
                   style={{ filter: 'drop-shadow(0 0 10px hsl(147 100% 50% / 0.5))' }}
                 />
@@ -22,20 +22,20 @@ const Footer = () => {
                 <span className="text-neon-green/60 text-[10px] uppercase tracking-widest">PREDICTION PROTOCOL</span>
               </div>
             </div>
-            
+
             {/* Social Icons */}
             <div className="flex gap-4 mb-4">
               <a href="#" className="w-10 h-10 border border-neon-green/30 rounded-lg flex items-center justify-center text-neon-green hover:bg-neon-green/10 hover:border-neon-green transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 border border-neon-green/30 rounded-lg flex items-center justify-center text-neon-green hover:bg-neon-green/10 hover:border-neon-green transition-colors">
+              <a href="https://github.com/betbankr" className="w-10 h-10 border border-neon-green/30 rounded-lg flex items-center justify-center text-neon-green hover:bg-neon-green/10 hover:border-neon-green transition-colors">
                 <Github className="w-5 h-5" />
               </a>
               <a href="#" className="w-10 h-10 border border-neon-green/30 rounded-lg flex items-center justify-center text-neon-green hover:bg-neon-green/10 hover:border-neon-green transition-colors">
                 <Send className="w-5 h-5" />
               </a>
             </div>
-            
+
             <p className="text-neon-green/60 text-sm">// prediction_markets.exe</p>
           </div>
 
