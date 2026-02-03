@@ -1,6 +1,6 @@
 # BetBankr - Prediction Protocol
 
-BetBankr adalah protokol prediksi berbasis blockchain Solana yang memungkinkan pengguna membuat prediksi tentang berbagai kejadian dunia nyata.
+BetBankr adalah protokol prediksi berbasis blockchain yang memungkinkan pengguna membuat prediksi tentang berbagai kejadian dunia nyata.
 
 GitHub: [https://github.com/betbankr](https://github.com/betbankr)
 
@@ -13,7 +13,7 @@ Proyek ini dibangun dengan:
 - React
 - shadcn/ui
 - Tailwind CSS
-- Solana Blockchain Integration
+- Blockchain Integration
 
 ## Instalasi Lokal
 
@@ -37,7 +37,7 @@ npm run dev
 
 ## Pengembangan
 
-Proyek ini menggunakan arsitektur komponen modular dengan integrasi Solana untuk fungsionalitas blockchain. Semua komponen UI menggunakan shadcn/ui dan distilasi dengan Tailwind CSS.
+Proyek ini menggunakan arsitektur komponen modular dengan integrasi blockchain. Semua komponen UI menggunakan shadcn/ui dan distilasi dengan Tailwind CSS.
 
 ## Kontribusi
 

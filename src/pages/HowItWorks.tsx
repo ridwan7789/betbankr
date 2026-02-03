@@ -38,7 +38,7 @@ const HowItWorks = () => {
     {
       icon: Shield,
       title: "SECURE_PROTOCOL",
-      description: "All transactions are secured on Solana blockchain with instant finality.",
+      description: "All transactions are secured on blockchain with instant finality.",
     },
     {
       icon: Zap,

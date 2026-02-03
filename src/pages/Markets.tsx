@@ -47,7 +47,7 @@ const allMarkets: Market[] = [
     id: 3,
     source: "POLY",
     isHot: true,
-    question: "Will Solana flip Ethereum in TVL by 2026?",
+    question: "Will blockchain flip Ethereum in TVL by 2026?",
     category: "crypto",
     yesPercent: 18,
     noPercent: 82,
