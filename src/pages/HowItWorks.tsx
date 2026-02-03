@@ -73,7 +73,7 @@ const HowItWorks = () => {
             <div className="text-center mb-8">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Terminal className="w-6 h-6 text-neon-green" />
-                <span className="text-neon-green/60 text-sm font-mono">betverse@terminal:~$</span>
+                <span className="text-neon-green/60 text-sm font-mono">betbankr@terminal:~$</span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-bold text-neon-green mb-4">
                 {'>'} HOW_IT_WORKS

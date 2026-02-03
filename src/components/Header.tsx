@@ -82,7 +82,7 @@ const Header = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-neon-green font-bold text-lg lg:text-xl tracking-wider">Betverse</span>
+                <span className="text-neon-green font-bold text-lg lg:text-xl tracking-wider">BetBankr</span>
                 <span className="text-neon-green/60 text-[10px] lg:text-xs uppercase tracking-widest">PREDICTION PROTOCOL</span>
               </div>
             </Link>
@@ -167,7 +167,7 @@ const Header = () => {
             >
               {/* Menu Header */}
               <div className="h-16 flex items-center px-6 border-b border-neon-green/30">
-                <span className="text-neon-green/60 text-sm font-mono">// navigation.sh</span>
+                <span className="text-neon-green/60 text-sm font-mono">// betbankr.sh</span>
               </div>
 
               {/* Menu Content */}
@@ -233,7 +233,7 @@ const Header = () => {
               {/* Terminal-style footer */}
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-neon-green/20">
                 <p className="text-neon-green/40 text-xs font-mono text-center">
-                  betverse@terminal:~$ _
+                  betbankr@terminal:~$ _
                 </p>
               </div>
             </motion.div>
