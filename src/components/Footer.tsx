@@ -25,7 +25,7 @@ const Footer = () => {
 
             {/* Social Icons */}
             <div className="flex gap-4 mb-4">
-              <a href="#" className="w-10 h-10 border border-neon-green/30 rounded-lg flex items-center justify-center text-neon-green hover:bg-neon-green/10 hover:border-neon-green transition-colors">
+              <a href="https://twitter.com/i/communities/2018954723685191851" className="w-10 h-10 border border-neon-green/30 rounded-lg flex items-center justify-center text-neon-green hover:bg-neon-green/10 hover:border-neon-green transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
               <a href="https://github.com/betbankr" className="w-10 h-10 border border-neon-green/30 rounded-lg flex items-center justify-center text-neon-green hover:bg-neon-green/10 hover:border-neon-green transition-colors">
