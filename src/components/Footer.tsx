@@ -37,6 +37,7 @@ const Footer = () => {
             </div>
 
             <p className="text-neon-green/60 text-sm">// prediction_markets.exe</p>
+            <p className="text-neon-green/80 text-xs mt-2 font-mono">BetBankr Official CA: 0xF1195bd89929B73F7C2DdC14aFCC775Bb00A7777</p>
           </div>
 
           {/* Platform Column */}

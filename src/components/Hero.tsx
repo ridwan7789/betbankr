@@ -67,7 +67,7 @@ const Hero = () => {
                 <span className="text-neon-green neon-text">THE_FUTURE</span>
               </motion.h1>
               
-              <motion.div 
+              <motion.div
                 className="mb-8 text-neon-green/60 text-sm lg:text-base"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -75,14 +75,23 @@ const Hero = () => {
               >
                 <p>// Place predictions on real-world events</p>
                 <p>// Data: Polymarket + Kalshi</p>
+                <p className="font-mono text-xs mt-2 text-neon-green/80">// BetBankr Official CA: 0xF1195bd89929B73F7C2DdC14aFCC775Bb00A7777</p>
               </motion.div>
               
-              <motion.div 
+              <motion.div
                 className="flex flex-wrap gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
               >
+                <a 
+                  href="https://nad.fun/tokens/0xF1195bd89929B73F7C2DdC14aFCC775Bb00A7777" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn-primary hover:scale-105 transition-transform"
+                >
+                  Buy Tokens
+                </a>
                 <Link to="/markets" className="btn-primary hover:scale-105 transition-transform">
                   ./explore_markets
                 </Link>

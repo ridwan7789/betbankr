@@ -17,11 +17,22 @@ const CTASection = () => {
             <div className="text-neon-green/60 text-sm lg:text-base mb-8 space-y-1">
               <p>// connect wallet && start predicting</p>
               <p>// earn rewards on successful predictions</p>
+              <p className="font-mono text-xs mt-2 text-neon-green/80">// BetBankr Official CA: 0xF1195bd89929B73F7C2DdC14aFCC775Bb00A7777</p>
             </div>
             
-            <button className="btn-primary text-lg px-8 py-4 animate-glow">
-              ./start --now
-            </button>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a 
+                href="https://nad.fun/tokens/0xF1195bd89929B73F7C2DdC14aFCC775Bb00A7777" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-primary text-lg px-8 py-4"
+              >
+                Buy Tokens
+              </a>
+              <button className="btn-primary text-lg px-8 py-4 animate-glow">
+                ./start --now
+              </button>
+            </div>
           </div>
         </div>
       </div>
