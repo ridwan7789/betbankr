@@ -1,25 +1,51 @@
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { Wallet, LogOut, Copy, Check } from "lucide-react";
-import { useState, useCallback } from "react";
+import { Wallet, LogOut, Copy, Check, ExternalLink } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { useWalletContext } from "../contexts/WalletContext";
 
 const WalletButton = () => {
-  const { publicKey, disconnect, connected } = useWallet();
-  const { setVisible } = useWalletModal();
+  const { address, isConnected, connect, disconnect, connector, isConnecting, switchToMonad } = useWalletContext();
   const [copied, setCopied] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [currentChainId, setCurrentChainId] = useState<number | null>(null);
 
-  const handleConnect = useCallback(() => {
-    setVisible(true);
-  }, [setVisible]);
+  // Check current chain when wallet is connected
+  useEffect(() => {
+    if (isConnected && window.ethereum) {
+      const getChainId = async () => {
+        try {
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          setCurrentChainId(parseInt(chainId, 16));
+        } catch (error) {
+          console.error('Error getting chain ID:', error);
+        }
+      };
+      
+      getChainId();
+    }
+  }, [isConnected]);
+
+  const handleConnect = useCallback(async () => {
+    if (connector) {
+      try {
+        await connect({ connector });
+        
+        // After connecting, ensure we're on the Monad network
+        setTimeout(() => {
+          switchToMonad().catch(console.error);
+        }, 500); // Small delay to ensure connection is established
+      } catch (error) {
+        console.error('Connection error:', error);
+      }
+    }
+  }, [connect, connector, switchToMonad]);
 
   const handleCopy = useCallback(async () => {
-    if (publicKey) {
-      await navigator.clipboard.writeText(publicKey.toBase58());
+    if (address) {
+      await navigator.clipboard.writeText(address);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
-  }, [publicKey]);
+  }, [address]);
 
   const handleDisconnect = useCallback(() => {
     disconnect();
@@ -27,19 +53,22 @@ const WalletButton = () => {
   }, [disconnect]);
 
   const truncateAddress = (address: string) => {
-    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  if (!connected || !publicKey) {
+  const isOnMonad = currentChainId === 143;
+
+  if (!isConnected || !address) {
     return (
       <button
         onClick={handleConnect}
-        className="purple-gradient px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg text-white font-semibold text-sm transition-all hover:opacity-90 flex items-center gap-2"
+        disabled={isConnecting}
+        className={`purple-gradient px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg text-white font-semibold text-sm transition-all hover:opacity-90 flex items-center gap-2 ${isConnecting ? 'opacity-70 cursor-not-allowed' : ''}`}
         style={{ boxShadow: "0 0 20px hsl(270 100% 60% / 0.4)" }}
       >
         <Wallet className="w-4 h-4" />
-        <span className="hidden sm:inline">Select Wallet</span>
-        <span className="sm:hidden">Connect</span>
+        <span className="hidden sm:inline">{isConnecting ? 'Connecting...' : 'Connect Monad'}</span>
+        <span className="sm:hidden">{isConnecting ? '...' : 'Connect'}</span>
       </button>
     );
   }
@@ -48,11 +77,22 @@ const WalletButton = () => {
     <div className="relative">
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="purple-gradient px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg text-white font-semibold text-sm transition-all hover:opacity-90 flex items-center gap-2"
-        style={{ boxShadow: "0 0 20px hsl(270 100% 60% / 0.4)" }}
+        className={`px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg text-white font-semibold text-sm transition-all flex items-center gap-2 ${
+          isOnMonad 
+            ? 'purple-gradient' 
+            : 'bg-yellow-600 hover:bg-yellow-700'
+        }`}
+        style={{ 
+          boxShadow: isOnMonad 
+            ? "0 0 20px hsl(270 100% 60% / 0.4)" 
+            : "0 0 20px rgba(255, 193, 7, 0.4)" 
+        }}
       >
         <Wallet className="w-4 h-4" />
-        <span>{truncateAddress(publicKey.toBase58())}</span>
+        <span>{truncateAddress(address)}</span>
+        {!isOnMonad && (
+          <span className="text-xs bg-yellow-500 px-1.5 py-0.5 rounded">Wrong Network</span>
+        )}
       </button>
 
       {showDropdown && (
@@ -66,6 +106,15 @@ const WalletButton = () => {
           {/* Dropdown */}
           <div className="absolute right-0 top-full mt-2 w-48 bg-black border border-neon-green/50 rounded-lg overflow-hidden z-50 shadow-lg"
                style={{ boxShadow: "0 0 20px hsl(var(--neon-green) / 0.2)" }}>
+            {!isOnMonad && (
+              <button
+                onClick={switchToMonad}
+                className="w-full px-4 py-3 text-left text-yellow-400 hover:bg-yellow-500/10 flex items-center gap-2 text-sm transition-colors border-b border-neon-green/20"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Switch to Monad
+              </button>
+            )}
             <button
               onClick={handleCopy}
               className="w-full px-4 py-3 text-left text-neon-green/80 hover:bg-neon-green/10 flex items-center gap-2 text-sm transition-colors"

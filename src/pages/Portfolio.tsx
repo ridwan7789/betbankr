@@ -1,12 +1,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Wallet, TrendingUp, Clock, DollarSign } from "lucide-react";
+import { useWalletContext } from "../contexts/WalletContext";
 
 const Portfolio = () => {
-  const { publicKey, connected } = useWallet();
-  const { setVisible } = useWalletModal();
+  const { address, isConnected } = useWalletContext();
 
   // Mock portfolio data for connected state
   const portfolioStats = {
@@ -46,7 +44,7 @@ const Portfolio = () => {
     },
   ];
 
-  if (!connected || !publicKey) {
+  if (!isConnected || !address) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
@@ -66,12 +64,12 @@ const Portfolio = () => {
 
             {/* Description */}
             <p className="text-neon-green/70 text-sm lg:text-base mb-6">
-              Connect your Phantom wallet to view your prediction portfolio.
+              Connect your wallet to view your prediction portfolio.
             </p>
 
             {/* Connect Button */}
             <button
-              onClick={() => setVisible(true)}
+              onClick={() => window.dispatchEvent(new Event('wallet-connect-request'))}
               className="purple-gradient px-6 py-3 rounded-lg text-white font-semibold text-sm transition-all hover:opacity-90 inline-flex items-center gap-2"
               style={{ boxShadow: "0 0 20px hsl(270 100% 60% / 0.4)" }}
             >
@@ -96,7 +94,7 @@ const Portfolio = () => {
               {'>'} MY_PORTFOLIO
             </h1>
             <p className="text-neon-green/60 text-sm font-mono">
-              // wallet: {publicKey.toBase58().slice(0, 8)}...{publicKey.toBase58().slice(-8)}
+              // wallet: {address?.slice(0, 8)}...{address?.slice(-8)}
             </p>
           </div>
 
